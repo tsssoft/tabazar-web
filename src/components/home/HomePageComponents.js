@@ -101,10 +101,16 @@ const HomePageComponents = ({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedLatLng = JSON.parse(
-        window.localStorage.getItem("currentLatLng")
-      );
-      setCurrentLatLng(storedLatLng);
+      try {
+        const raw = window.localStorage.getItem("currentLatLng");
+        const storedLatLng =
+          raw && raw !== "undefined" && raw !== "null"
+            ? JSON.parse(raw)
+            : { lat: 23.94, lng: 89.0 };
+        setCurrentLatLng(storedLatLng);
+      } catch {
+        setCurrentLatLng({ lat: 23.94, lng: 89.0 });
+      }
     }
   }, []);
 
@@ -187,7 +193,8 @@ const HomePageComponents = ({
   }, [router.query.data_type]);
 
   const getModuleWiseComponents = () => {
-    switch (getCurrentModuleType()) {
+    const currentType = getCurrentModuleType() || ModuleTypes.GROCERY;
+    switch (currentType) {
       case ModuleTypes.GROCERY:
         return <Grocery configData={configData} routeSection={routeSection} />;
       case ModuleTypes.PHARMACY:
@@ -220,7 +227,7 @@ const HomePageComponents = ({
           />
         );
       default:
-        return null;
+        return <Grocery configData={configData} routeSection={routeSection} />;
     }
   };
 

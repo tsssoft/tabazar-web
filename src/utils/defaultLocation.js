@@ -3,8 +3,8 @@ import { saveModuleParam } from "./moduleParamManager";
 export const DEFAULT_ZONE_ID = "[2]";
 export const DEFAULT_LOCATION_NAME = "Mirpur Zone, Dhaka";
 export const DEFAULT_LAT_LNG = {
-  lat: 23.954876,
-  lng: 88.982281,
+  lat: 23.94,
+  lng: 89.0,
 };
 export const DEFAULT_MODULE = {
   id: 2,

@@ -6,6 +6,7 @@ import { Box, Stack } from "@mui/system";
 import { t } from "i18next";
 import Link from "next/link";
 import { getStoreRedirectURL } from "helper-functions/handleStoreRedirect";
+import { getModuleId } from "helper-functions/getModuleId";
 
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -64,7 +65,7 @@ const StoresInfoCard = (props) => {
   const id = data?.id ? data?.id : data?.slug;
   const { configData } = useSelector((state) => state.configData);
   const store_image_url = `${configData?.base_urls?.store_image_url}`;
-  const moduleId = JSON.parse(window.localStorage.getItem("module"))?.id;
+  const moduleId = getModuleId();
 
   const [openModal, setOpenModal] = React.useState(false);
   const dispatch = useDispatch();

@@ -1,4 +1,5 @@
 import React from "react";
+import { safeGetItem } from "../../utils/safeStorage";
 import PropTypes from "prop-types";
 import { Stack, styled } from "@mui/system";
 import { buttonsData } from "../store-details/buttonsData";
@@ -39,7 +40,7 @@ const VegNonVegCheckBox = (props) => {
     });
   };
   const getModule = () => {
-    return JSON.parse(window.localStorage.getItem("module"));
+    return safeGetItem("module");
   };
   return (
     <Stack direction="row" alignItems="center" spacing={2} width="100%">

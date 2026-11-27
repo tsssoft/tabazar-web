@@ -13,6 +13,7 @@ import CustomPagination from "../custom-pagination";
 import CustomEmptyResult from "../custom-empty-result";
 import noData from "../../../public/static/nodata.png";
 import StoresInfoCard from "../home/stores-with-filter/cards-grid/StoresInfoCard";
+import { getModuleId } from "helper-functions/getModuleId";
 import { useSelector } from "react-redux";
 import { Shimmer } from "../home/popular-items-nearby";
 import { Stack } from "@mui/system";
@@ -37,7 +38,7 @@ const SearchFilterWithResults = ({
 }) => {
 	const { configData } = useSelector((state) => state.configData);
 	const store_image_url = `${configData?.base_urls?.store_image_url}`;
-	const moduleId = JSON.parse(window.localStorage.getItem("module"))?.id;
+	const moduleId = getModuleId();
 	const matches = useMediaQuery("(max-width:1100px)");
 	const matchesXs = useMediaQuery("(max-width:480px)");
 	return (

@@ -1,10 +1,12 @@
+import { safeGetItem } from "../utils/safeStorage";
+
 export const getLanguage = () => {
-  if (typeof window !== "undefined") {
-    return JSON.parse(window.localStorage.getItem("settings"))?.direction;
-  }
+  if (typeof window === "undefined") return "ltr";
+  const settings = safeGetItem("settings");
+  return settings?.direction || "ltr";
 };
+
 export const getModule = () => {
-  if (typeof window !== "undefined") {
-    return JSON.parse(window.localStorage.getItem("module"));
-  }
+  if (typeof window === "undefined") return null;
+  return safeGetItem("module");
 };

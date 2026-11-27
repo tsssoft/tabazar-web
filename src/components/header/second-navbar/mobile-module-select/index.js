@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import useGetModule from "../../../../api-manage/hooks/react-query/useGetModule";
 import { useDispatch } from "react-redux";
+import { safeGetItem } from "../../../../utils/safeStorage";
 import { setSelectedModule } from "../../../../redux/slices/utils";
 export const getLocation = () => {
   return window.localStorage.getItem("location");
@@ -23,7 +24,7 @@ const MobileModuleSelection = () => {
     setOpenModuleSelection(false);
   };
   const getModule = () => {
-    return JSON.parse(window.localStorage.getItem("module"));
+    return safeGetItem("module");
   };
 
   return (

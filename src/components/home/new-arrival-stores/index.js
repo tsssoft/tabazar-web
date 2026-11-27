@@ -14,6 +14,7 @@ import CustomSlider from "components/common/CustomSlider";
 
 import { useGetPopularStoreWithoutInfiniteScroll } from "api-manage/hooks/react-query/store/useGetPopularStore";
 import { getCurrentModuleType } from "helper-functions/getCurrentModuleType";
+import { getModuleId } from "helper-functions/getModuleId";
 import { getStoreRedirectURL } from "helper-functions/handleStoreRedirect";
 import { ModuleTypes } from "helper-functions/moduleTypes";
 import { setNewArrivalStores } from "redux/slices/storedData";
@@ -99,7 +100,7 @@ const NewArrivalStores = () => {
   });
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(0);
   const { configData } = useSelector((state) => state.configData);
-  const moduleId = JSON.parse(window.localStorage.getItem("module"))?.id;
+  const moduleId = getModuleId();
   const queryKey = "navbar-stores";
   const { newArrivalStores } = useSelector((state) => state.storedData);
   const [storeData, setStoreData] = useState([]);

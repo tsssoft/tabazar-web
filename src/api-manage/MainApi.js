@@ -22,12 +22,27 @@ MainApi.interceptors.request.use(function (config) {
   if (typeof window !== "undefined") {
     zoneid = localStorage.getItem("zoneid");
     token = localStorage.getItem("token");
-    language = JSON.parse(localStorage.getItem("language-setting"));
-    currentLocation = JSON.parse(localStorage.getItem("currentLatLng"));
-    moduleid = JSON.parse(localStorage.getItem("module"))?.id;
+    try {
+      const langRaw = localStorage.getItem("language-setting");
+      language = langRaw && langRaw !== "undefined" && langRaw !== "null" ? JSON.parse(langRaw) : undefined;
+    } catch {
+      language = undefined;
+    }
+    try {
+      const locRaw = localStorage.getItem("currentLatLng");
+      currentLocation = locRaw && locRaw !== "undefined" && locRaw !== "null" ? JSON.parse(locRaw) : undefined;
+    } catch {
+      currentLocation = undefined;
+    }
+    try {
+      const modRaw = localStorage.getItem("module");
+      moduleid = modRaw && modRaw !== "undefined" && modRaw !== "null" ? JSON.parse(modRaw)?.id : undefined;
+    } catch {
+      moduleid = undefined;
+    }
   }
-  config.headers.latitude = currentLocation?.lat || 0;
-  config.headers.longitude = currentLocation?.lng || 0;
+  config.headers.latitude = currentLocation?.lat || 23.94;
+  config.headers.longitude = currentLocation?.lng || 89.0;
   const zoneidIsValid =
     zoneid &&
     zoneid !== "undefined" &&
@@ -50,8 +65,8 @@ MainApi.interceptors.request.use(function (config) {
   } else {
     config.headers.zoneid = "[2]";
   }
-  if (!config.headers.latitude || config.headers.latitude === 0) config.headers.latitude = 23.954876;
-  if (!config.headers.longitude || config.headers.longitude === 0) config.headers.longitude = 88.982281;
+  if (!config.headers.latitude || config.headers.latitude === 0) config.headers.latitude = 23.94;
+  if (!config.headers.longitude || config.headers.longitude === 0) config.headers.longitude = 89.0;
   if (!config.headers.moduleId) config.headers.moduleId = moduleid || 2;
   if (token) config.headers.authorization = `Bearer ${token}`;
   if (language) config.headers["X-localization"] = language;

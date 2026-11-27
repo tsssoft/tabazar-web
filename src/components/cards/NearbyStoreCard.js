@@ -1,6 +1,7 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { alpha, styled, Typography } from "@mui/material";
+import { getModuleId } from "helper-functions/getModuleId";
 import { handleStoreRedirect } from "helper-functions/handleStoreRedirect";
 
 import { Box, Stack } from "@mui/system";
@@ -106,7 +107,7 @@ const NearbyStoreCard = (props) => {
   const { item } = props;
   const { wishLists } = useSelector((state) => state.wishList);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const moduleId = JSON.parse(window.localStorage.getItem("module"))?.id;
+  const moduleId = getModuleId();
   const classes = textWithEllipsis();
   const { ref: textRef, isEllipsed } = useTextEllipsis(item?.name);
   const { t } = useTranslation();

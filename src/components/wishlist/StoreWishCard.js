@@ -18,11 +18,12 @@ import toast from "react-hot-toast";
 import { useWishListStoreDelete } from "api-manage/hooks/react-query/wish-list/useWishListStoreDelete";
 import { useRouter } from "next/router";
 import VerifiedStoreBadge from "components/cards/VerifiedStoreBadge";
+import { getModuleId } from "helper-functions/getModuleId";
 const StoreWishCard = ({ data, setSideDrawerOpen }) => {
   const router = useRouter();
   const theme = useTheme();
   const dispatch = useDispatch();
-  const moduleId = JSON.parse(window.localStorage.getItem("module"))?.id;
+  const moduleId = getModuleId();
   const storeIdOrSlug = data?.id ? data?.id : data?.slug;
 
   const onStoreSuccessHandlerForDelete = (res) => {
