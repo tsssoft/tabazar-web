@@ -973,6 +973,23 @@ const ItemCheckout = (props) => {
     }
   };
   const placeOrder = () => {
+    // Delivery address check
+    if (orderType !== "take_away") {
+      const hasDeliveryInfo = token
+        ? Boolean(address?.address)
+        : Boolean(guestUserInfo?.contact_person_number && guestUserInfo?.address);
+      if (!hasDeliveryInfo) {
+        toast.error(
+          t(
+            token
+              ? "Please select or add a delivery address to continue"
+              : "Please provide your delivery address and contact information to continue"
+          )
+        );
+        return;
+      }
+    }
+
     // The server refused to quote this delivery (e.g. an area/zip the zone no
     // longer covers). The fee reads 0 out of the empty payload, so placing here
     // would bill a price the server never agreed — stop instead.

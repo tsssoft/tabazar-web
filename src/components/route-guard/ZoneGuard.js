@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { ensureDefaultLocationAndModule } from "../../utils/defaultLocation";
 
 const ZoneGuard = (props) => {
   const { children } = props;
@@ -39,8 +40,8 @@ const ZoneGuard = (props) => {
       if (storedIdentifier) {
         setChecked(true);
       } else {
-        setChecked(false);
-        router.push("/", undefined, { shallow: true });
+        ensureDefaultLocationAndModule();
+        setChecked(true);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

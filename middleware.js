@@ -27,6 +27,16 @@ const excludeModuleRoutes = [
 export function middleware(request) {
   const { pathname, searchParams } = request.nextUrl;
 
+  // Root "/" redirect directly to "/home" with module (Chaldal style)
+  if (pathname === "/") {
+    const moduleFromCookie = request.cookies.get("selectedModule")?.value;
+    const targetModule = moduleFromCookie || "grocery";
+    const url = request.nextUrl.clone();
+    url.pathname = "/home";
+    url.searchParams.set("module", targetModule);
+    return NextResponse.redirect(url);
+  }
+
   // Get module parameter from cookie (set on client)
   const moduleFromCookie = request.cookies.get("selectedModule")?.value;
 

@@ -47,8 +47,12 @@ MainApi.interceptors.request.use(function (config) {
     })();
   if (zoneidIsValid) {
     config.headers.zoneid = zoneid;
+  } else {
+    config.headers.zoneid = "[2]";
   }
-  if (moduleid && !config.headers.moduleId) config.headers.moduleId = moduleid;
+  if (!config.headers.latitude || config.headers.latitude === 0) config.headers.latitude = 23.954876;
+  if (!config.headers.longitude || config.headers.longitude === 0) config.headers.longitude = 88.982281;
+  if (!config.headers.moduleId) config.headers.moduleId = moduleid || 2;
   if (token) config.headers.authorization = `Bearer ${token}`;
   if (language) config.headers["X-localization"] = language;
   if (hostname) config.headers["origin"] = hostname;

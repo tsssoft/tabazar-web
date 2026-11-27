@@ -93,9 +93,8 @@ const ModuleChecker = () => {
         dispatch(setSelectedModule(selectedModule));
       }else{
         toast.error("Selected module is not available");
-        localStorage.removeItem("module");
         router.replace(
-          { pathname: "/", query: {} },
+          { pathname: "/home", query: { module: "grocery" } },
           undefined,
           { shallow: true }
         );

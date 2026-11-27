@@ -25,6 +25,7 @@ import { useEffect } from "react";
 import ModuleChecker from "../src/components/module-select/ModuleChecker";
 import ProSubscriptionExpiredModal from "../src/components/pro-plan/ProSubscriptionExpiredModal";
 import App from "next/app";
+import { ensureDefaultLocationAndModule } from "../src/utils/defaultLocation";
 
 Router.events.on("routeChangeStart", nProgress.start);
 Router.events.on("routeChangeError", nProgress.done);
@@ -61,19 +62,20 @@ function MyApp(props) {
   // Persist store
   let persistor = persistStore(store);
 
-  // Version check
+  // Version check & default location/module initialization (Chaldal style)
   useEffect(() => {
-    if (!currentVersion) return;
-
-    const storedVersion = localStorage.getItem("appVersion");
-    if (storedVersion !== currentVersion) {
-      const storedSettings = localStorage.getItem("settings");
-      localStorage.clear();
-      if (storedSettings) {
-        localStorage.setItem("settings", storedSettings);
+    if (currentVersion) {
+      const storedVersion = localStorage.getItem("appVersion");
+      if (storedVersion !== currentVersion) {
+        const storedSettings = localStorage.getItem("settings");
+        localStorage.clear();
+        if (storedSettings) {
+          localStorage.setItem("settings", storedSettings);
+        }
+        localStorage.setItem("appVersion", currentVersion);
       }
-      localStorage.setItem("appVersion", currentVersion);
     }
+    ensureDefaultLocationAndModule();
   }, []);
 
   return (

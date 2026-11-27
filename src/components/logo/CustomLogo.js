@@ -26,19 +26,12 @@ const CustomLogo = ({ logoImg, atlText, height, width, objectFit }) => {
     const queryModule = router?.query?.module || router?.query?.module_id;
     const moduleValue = Array.isArray(queryModule)
       ? queryModule[0]
-      : queryModule || getModuleId();
-    const homeHref = moduleValue
-      ? { pathname: "/home", query: { module: String(moduleValue) } }
-      : "/home";
-    if (router.pathname === "/") {
-      if (location) {
-        router.replace(homeHref, undefined, { shallow: true });
-      } else {
-        router.push("/", undefined, { shallow: true });
-      }
-    } else {
-      router.replace(homeHref, undefined, { shallow: true }).then();
-    }
+      : queryModule || getModuleId() || "grocery";
+    const homeHref = {
+      pathname: "/home",
+      query: { module: String(moduleValue) },
+    };
+    router.replace(homeHref, undefined, { shallow: true });
   };
   return (
 
