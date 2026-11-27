@@ -225,7 +225,13 @@ const MapModal = ({
   );
   const { refetch: rentalWishlistRefetch } = useGetWishList(onSuccessHandler);
   const handlePickLocationOnClick = () => {
-    if (zoneId && geoCodeResults && location) {
+    if (zoneId && location) {
+      const addressText =
+        geoCodeResults?.results?.[0]?.formatted_address ||
+        zoneData?.zone_data?.[0]?.display_name ||
+        zoneData?.zone_data?.[0]?.name ||
+        "Selected Location";
+
       if (getToken()) {
         if (moduleType === "rental") {
           rentalWishlistRefetch();
@@ -237,17 +243,14 @@ const MapModal = ({
         localStorage.setItem("zoneid", zoneId);
       }
       if (fromReceiver !== "1" && toparcel !== "1") {
-        localStorage.setItem(
-          "location",
-          geoCodeResults?.results?.[0]?.formatted_address
-        );
+        localStorage.setItem("location", addressText);
         localStorage.setItem("currentLatLng", JSON.stringify(location));
       } else {
         toast.success(t("New location has been set."));
       }
 
       if (toparcel === "1") {
-        handleLocation(location, geoCodeResults?.results?.[0]?.formatted_address);
+        handleLocation(location, addressText);
         handleClose();
       } else {
         if (fromStore) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {Button, Popover, Stack, Typography, useTheme} from "@mui/material";
+import {Button, CircularProgress, Popover, Stack, Typography, useTheme} from "@mui/material";
+import toast from "react-hot-toast";
 
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
@@ -30,25 +31,78 @@ const AddressReselectPopover = (props) => {
     isGeolocationEnabled: true,
   });
 
-  const handleAgreeLocation = () => {
-    // e.stopPropagation();
-    if (coords) {
-      setLocation({ lat: coords?.latitude, lng: coords?.longitude });
-      setShowCurrentLocation(true);
-      setGeoLocationEnable(true);
-      setZoneIdEnabled(true);
-    }
-    setGeoLocationEnable(true);
-    setZoneIdEnabled(true);
-    window.location.reload();
-  };
+  const [loadingCurrentLocation, setLoadingCurrentLocation] = useState(false);
 
-  const handleSetLocation = async () => {
-    if (currentLocation && location) {
-      localStorage.setItem("location", currentLocation);
-      localStorage.setItem("currentLatLng", JSON.stringify(location));
-      window.location.reload();
+  const handleAgreeLocation = async () => {
+    if (typeof window === "undefined" || !navigator.geolocation) {
+      toast.error(t("Geolocation is not supported by your browser"));
+      return;
     }
+
+    setLoadingCurrentLocation(true);
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const newLatLng = { lat, lng };
+
+          // 1. Query zone for these coordinates directly from backend API
+          const zoneRes = await fetch(
+            `${(process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/+$/, "")}/api/v1/config/get-zone-id?lat=${lat}&lng=${lng}`
+          );
+          const zoneJson = await zoneRes.json();
+          const zoneContent = zoneJson?.content;
+
+          if (!zoneContent?.zone_id) {
+            toast.error(t("Sorry, we are not available in this area yet."));
+            setLoadingCurrentLocation(false);
+            return;
+          }
+
+          const zoneName =
+            zoneContent?.zone_data?.[0]?.display_name ||
+            zoneContent?.zone_data?.[0]?.name ||
+            "Selected Location";
+
+          // 2. Try to get formatted address from geocode API (if available)
+          let resolvedAddress = zoneName;
+          try {
+            const geoRes = await fetch(
+              `${(process.env.NEXT_PUBLIC_BASE_URL || "").replace(/\/+$/, "")}/api/v1/config/geocode-api?lat=${lat}&lng=${lng}`
+            );
+            const geoJson = await geoRes.json();
+            const formatted = geoJson?.content?.results?.[0]?.formatted_address;
+            if (formatted) {
+              resolvedAddress = formatted;
+            }
+          } catch (e) {
+            // Fallback to zoneName
+          }
+
+          // 3. Save to localStorage
+          localStorage.setItem("zoneid", zoneContent.zone_id);
+          localStorage.setItem("currentLatLng", JSON.stringify(newLatLng));
+          localStorage.setItem("location", resolvedAddress);
+
+          toast.success(t(`Location set to ${resolvedAddress}`));
+          setLoadingCurrentLocation(false);
+          onClose?.();
+          window.location.reload();
+        } catch (err) {
+          console.error("Error setting current location:", err);
+          toast.error(t("Failed to detect location. Please try again."));
+          setLoadingCurrentLocation(false);
+        }
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        toast.error(t("Please allow location access in your browser"));
+        setLoadingCurrentLocation(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   };
   const { data: geoCodeResults, isLoading: isLoadingGeoCode } = useGetGeoCode(
     location,
@@ -143,23 +197,27 @@ const AddressReselectPopover = (props) => {
               )}
             </Stack>
           </SimpleBar>
-         <Button
-           fullWidth
-              onClick={handleAgreeLocation}
-              startIcon={
+          <Button
+            fullWidth
+            disabled={loadingCurrentLocation}
+            onClick={handleAgreeLocation}
+            startIcon={
+              loadingCurrentLocation ? (
+                <CircularProgress size={18} sx={{ color: theme.palette.primary.main }} />
+              ) : (
                 <ControlPointOutlinedIcon sx={{ color: theme.palette.primary.main }} />
-              }
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-
-                fontWeight: 600,
-                color: theme.palette.primary.main,
-              }}
-            >
-              {t("Use Current Location")}
-            </Button>
+              )
+            }
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 600,
+              color: theme.palette.primary.main,
+            }}
+          >
+            {loadingCurrentLocation ? t("Detecting location...") : t("Use Current Location")}
+          </Button>
           <Stack width="100%" justifyContent="center" alignItems="center">
             <CustomButtonPrimary onClick={() => setOpenMapModal(true)}>
               {t("Pick from map")}
