@@ -109,9 +109,19 @@ const AddressReselectPopover = (props) => {
     geoLocationEnable
   );
 
+  const handleSetLocation = async () => {
+    if (currentLocation && location) {
+      localStorage.setItem("location", currentLocation);
+      localStorage.setItem("currentLatLng", JSON.stringify(location));
+      window.location.reload();
+    }
+  };
+
   useEffect(() => {
-    handleSetLocation();
-  }, [currentLocation, location,address?.address]);
+    if (currentLocation && location) {
+      handleSetLocation();
+    }
+  }, [currentLocation, location, address?.address]);
   useEffect(() => {
     if (geoCodeResults?.results && showCurrentLocation) {
       setCurrentLocation(geoCodeResults?.results?.[0]?.formatted_address);
